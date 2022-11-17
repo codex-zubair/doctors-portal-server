@@ -21,8 +21,12 @@ const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology:
 
 const run = async () => {
     try {
+
+        // Appointment database
         const data = client.db("doctors-portal").collection("appointmentOption");
 
+        // Booking collection data base.
+        const bookingCollection = client.db('doctors-portal').collection("bookings");
 
         // const doc = {
         //     title: "Record of a Shriveled Datum",
@@ -44,12 +48,23 @@ const run = async () => {
         // !Getting data from the server side for client side
         app.get('/appointment', async(req, res)=> {
             const query = {}
-            const cursor =  data.find(query);
-            const result = await cursor.toArray();
+            const result = await data.find(query).toArray();
             res.send(result);
 
         })
 
+
+
+        // ! Posting Data 
+        app.post('/bookings', async(req, res)=> 
+        {
+            const booking = req.body;
+           console.log('booking',booking);
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
+
+        })
+        
 
 
 

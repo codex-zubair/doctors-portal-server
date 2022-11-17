@@ -11,3 +11,6 @@
 # jwt
 # dotenv
 
+#  Features
+### Reading data from mongoDB R
+### Sending Data into mongoDB C
