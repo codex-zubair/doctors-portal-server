@@ -23,7 +23,7 @@ const run = async () => {
     try {
 
         // Appointment database
-        const data = client.db("doctors-portal").collection("appointmentOption");
+        const appointmentOptionCollection = client.db("doctors-portal").collection("appointmentOption");
 
         // Booking collection data base.
         const bookingCollection = client.db('doctors-portal').collection("bookings");
@@ -38,39 +38,63 @@ const run = async () => {
 
 
         // * Test Running Display
-        app.get('/', (req,res)=> {
+        app.get('/', (req, res) => {
             res.send("i'm working fine :)")
         })
-    
+
 
 
 
         // !Getting data from the server side for client side
-        app.get('/appointment', async(req, res)=> {
+        app.get('/appointment', async (req, res) => {
+            // Getting all data from data base
             const query = {}
-            const result = await data.find(query).toArray();
-            res.send(result);
+            const options = await appointmentOptionCollection.find(query).toArray();
+
+
+            // Filtering data from option
+            const date = req.query.date;
+            const dateQuery = { date: date }
+            const bookedOption = await bookingCollection.find(dateQuery).toArray();
+            // Give me the value which are already booked
+
+
+            options.forEach(option => {
+                optionBooked = bookedOption.filter(book => book.treatment === option.name);
+                bookedSlots = optionBooked.map(book => book.slot);
+                // const remainingSlots = option.slots.filter(slot=> !bookedSlots.includes(slot))
+                const remainingSlots = option.slots.filter(slot => !bookedSlots.includes(slot))
+                // console.log(date,option.name , bookedSlots);
+                option.slots = remainingSlots;
+
+            })
+
+
+            res.send(options);
+
+
 
         })
+
+
+
+
 
 
 
         // ! Posting Data 
-        app.post('/bookings', async(req, res)=> 
-        {
+        app.post('/bookings', async (req, res) => {
             const booking = req.body;
-           console.log('booking',booking);
             const result = await bookingCollection.insertOne(booking);
             res.send(result);
-
         })
-        
+
 
 
 
     }
     finally {
-        console.log("Finally connected work done")
+        console.log("Working fine")
     }
 }
 
