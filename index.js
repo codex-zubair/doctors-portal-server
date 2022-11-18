@@ -11,8 +11,6 @@ app.use(express.json());
 
 
 
-// ZhpWvHKJM68Yqx16
-// doctors-portal
 
 
 const url = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.9zcs4sa.mongodb.net/?retryWrites=true&w=majority`;
@@ -85,6 +83,23 @@ const run = async () => {
         // ! Posting Data 
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
+            const query = {
+                date : booking.date,
+                treatment : booking.treatment
+            
+            }
+
+         
+            
+            const alreadyExist = await bookingCollection.find(query).toArray();
+
+            if(alreadyExist.length)
+            {
+                const message = `you already have a booking on ${booking.date}`
+                return res.send({acknowledged: false, message})
+            }
+
+            
             const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
