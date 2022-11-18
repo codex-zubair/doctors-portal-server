@@ -85,7 +85,8 @@ const run = async () => {
             const booking = req.body;
             const query = {
                 date : booking.date,
-                treatment : booking.treatment
+                treatment : booking.treatment,
+                email: booking.email
             
             }
 
