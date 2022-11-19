@@ -107,6 +107,18 @@ const run = async () => {
 
 
 
+        // !Getting all booking by specific email address.
+        app.get('/bookings',async(req,res)=> {
+            const email = req.body.email;
+            const query = {email: email}
+            const bookingList =  await bookingCollection.find(query).toArray();
+            res.send(bookingList);
+        })
+
+
+
+
+
 
     }
     finally {

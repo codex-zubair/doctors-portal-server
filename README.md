@@ -14,3 +14,5 @@
 #  Features
 ### Reading data from mongoDB R
 ### Sending Data into mongoDB C
+### Reading data from MongoDB using query R
+
