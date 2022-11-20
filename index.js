@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
+const { MongoClient, ServerApiVersion, Collection, ObjectId } = require('mongodb');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 // middleware
 app.use(cors());
@@ -87,23 +88,22 @@ const run = async () => {
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             const query = {
-                date : booking.date,
-                treatment : booking.treatment,
+                date: booking.date,
+                treatment: booking.treatment,
                 email: booking.email
-            
+
             }
 
-         
-            
+
+
             const alreadyExist = await bookingCollection.find(query).toArray();
 
-            if(alreadyExist.length)
-            {
+            if (alreadyExist.length) {
                 const message = `you already have a booking on ${booking.date}`
-                return res.send({acknowledged: false, message})
+                return res.send({ acknowledged: false, message })
             }
 
-            
+
             const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
@@ -111,16 +111,16 @@ const run = async () => {
 
 
         // !Getting all booking by specific email address.
-        app.get('/bookings',async(req,res)=> {
+        app.get('/bookings', async (req, res) => {
             const email = req.query.email;
-            const query = {email: email}
-            const bookingList =  await bookingCollection.find(query).toArray();
+            const query = { email: email }
+            const bookingList = await bookingCollection.find(query).toArray();
             res.send(bookingList);
         })
 
 
         // !POST Saving user into DB when user login
-        app.post('/users', async(req, res)=> {
+        app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
             res.send(result);
@@ -130,11 +130,25 @@ const run = async () => {
 
 
         // ! GET Getting All users email and name (Admin)
-        app.get('/users', async (req,res)=> 
-        {
+        app.get('/users', async (req, res) => {
+
             const query = {}
             const users = await usersCollection.find(query).toArray()
             res.send(users);
+
+
+        })
+
+
+        // !Delete user now
+        app.delete('/user/delete/:id', async (req,res)=> 
+        {
+
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
         })
 
 
