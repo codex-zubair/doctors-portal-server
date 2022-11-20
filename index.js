@@ -20,11 +20,14 @@ const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology:
 const run = async () => {
     try {
 
-        // Appointment database
+        //! Appointment database
         const appointmentOptionCollection = client.db("doctors-portal").collection("appointmentOption");
 
-        // Booking collection data base.
+        //! Booking collection data base.
         const bookingCollection = client.db('doctors-portal').collection("bookings");
+
+
+        const usersCollection = client.db('doctors-portal').collection('users');
 
         // const doc = {
         //     title: "Record of a Shriveled Datum",
@@ -109,13 +112,20 @@ const run = async () => {
 
         // !Getting all booking by specific email address.
         app.get('/bookings',async(req,res)=> {
-            const email = req.body.email;
+            const email = req.query.email;
             const query = {email: email}
             const bookingList =  await bookingCollection.find(query).toArray();
             res.send(bookingList);
         })
 
 
+        // !POST Saving user into DB when user login
+        app.post('/users', async(req, res)=> {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+
+        })
 
 
 
