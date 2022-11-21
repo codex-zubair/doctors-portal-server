@@ -141,14 +141,41 @@ const run = async () => {
 
 
         // !Delete user now
-        app.delete('/user/delete/:id', async (req,res)=> 
-        {
+        app.delete('/user/delete/:id', async (req, res) => {
 
             const id = req.params.id;
-            const query = {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
 
             const result = await usersCollection.deleteOne(query);
             res.send(result);
+        })
+
+
+
+        //!PUT Making some admin using  
+        app.put('/user/role/:id', async (req, res) => {
+            const id = req.params.id;
+            const email = req.headers.email;
+
+
+            // TODO filter with current email of user
+
+            const filter = { _id: ObjectId(id) };
+
+
+            // !Checking user admin or not if user admin then person can make another one admin START
+            const user = await usersCollection.findOne({ email: email });
+            if (user.role) {
+                const option = { upsert: true }
+                const role = { $set: { role: 'admin' } }
+                const update = await usersCollection.updateOne(filter, role, option);
+                res.send(update);
+            }
+            else {
+
+                res.send({unauthorized:'you are not admin!'});
+            }
+            // !Checking user admin or not if user admin then person can make another one admin END
         })
 
 
